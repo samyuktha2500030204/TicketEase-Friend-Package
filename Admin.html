@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TicketEase | Admin Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{background:#111318;color:#f5f5f5}
+header{background:#191c23;padding:20px 6%;border-bottom:1px solid #343946}.logo{color:#e7b75b;font-size:26px}
+.hidden{display:none!important}.login-page{min-height:85vh;display:flex;align-items:center;justify-content:center;padding:25px}
+.panel{width:100%;max-width:420px;background:#1c2029;border:1px solid #343946;padding:32px;border-radius:14px}
+h1{text-align:center;margin-bottom:12px}label{display:block;margin:15px 0 7px;color:#ddd}
+input,select{width:100%;padding:12px;background:#111318;color:white;border:1px solid #454b58;border-radius:6px}
+button{cursor:pointer}.primary{background:#e7b75b;color:#171717;border:0;padding:12px 18px;border-radius:6px;font-weight:bold}.full{width:100%;margin-top:20px}
+main{padding:35px 6% 55px}.heading{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.gold{color:#e7b75b}.muted{color:#aaa}.logout{background:#343946;color:white;border:0;padding:12px 18px;border-radius:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:16px;margin:25px 0 35px}
+.stat{background:#1c2029;border:1px solid #343946;padding:20px;border-radius:11px}.stat h3{font-size:14px;color:#aaa;margin-bottom:12px}.stat p{font-size:25px;color:#e7b75b;font-weight:bold}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}.filters select{width:auto;min-width:170px}
+.wrapper{overflow-x:auto;background:#1c2029;border:1px solid #343946;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:1150px}
+th,td{text-align:left;padding:13px;border-bottom:1px solid #343946;font-size:13px}th{background:#272c37;color:#e7b75b}td{color:#ddd}
+.empty{background:#1c2029;padding:20px;color:#aaa;border-radius:8px}footer{text-align:center;background:#191c23;color:#888;padding:20px}
+</style></head><body>
+<header><h2 class="logo">TicketEase Admin</h2></header>
+<section id="loginPage" class="login-page"><form class="panel" onsubmit="login(event)">
+<h1>Admin <span class="gold">Login</span></h1><p class="muted" style="text-align:center">Sign in to manage customer bookings.</p>
+<label>Email Address</label><input id="email" type="email" required placeholder="Admin email">
+<label>Password</label><input id="password" type="password" required placeholder="Password">
+<button class="primary full">Login</button></form></section>
+<main id="dashboard" class="hidden">
+<div class="heading"><div><h2 class="gold">Admin Dashboard</h2><p class="muted">Manage all customer bookings and payments.</p></div><button class="logout" onclick="logout()">Logout</button></div>
+<div class="stats">
+<div class="stat"><h3>Total Bookings</h3><p id="total">0</p></div>
+<div class="stat"><h3>Movie Bookings</h3><p id="movieCount">0</p></div>
+<div class="stat"><h3>Food Bookings</h3><p id="foodCount">0</p></div>
+<div class="stat"><h3>Transport Bookings</h3><p id="transportCount">0</p></div>
+<div class="stat"><h3>Total Revenue</h3><p id="revenue">₹0</p></div>
+</div>
+<h2 class="gold">All Customer Bookings</h2>
+<div class="filters"><select id="filter" onchange="render()"><option value="All">All Categories</option><option>Movie</option><option>Food</option><option>Transport</option></select>
+<button class="primary" onclick="exportCSV()">Export CSV</button><button class="logout" onclick="render()">Refresh Data</button></div>
+<div id="empty" class="empty hidden">No bookings have been made yet.</div>
+<div id="tableWrap" class="wrapper"><table><thead><tr>
+<th>Booking ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Category</th><th>Item</th><th>Details</th><th>Quantity</th><th>Amount</th><th>Payment</th><th>Status</th><th>Date</th>
+</tr></thead><tbody id="rows"></tbody></table></div>
+</main><footer>© 2026 TicketEase | Admin Management System</footer>
+<script>
+const ADMIN_EMAIL="admin@ticketease.com",ADMIN_PASSWORD="Admin@123";
+function getBookings(){try{return JSON.parse(localStorage.getItem("ticketease_bookings"))||[]}catch{return []}}
+function login(e){e.preventDefault();if(email.value===ADMIN_EMAIL&&password.value===ADMIN_PASSWORD){sessionStorage.setItem("ticketeaseAdminLoggedIn","true");dashboard.classList.remove("hidden");loginPage.classList.add("hidden");render()}else alert("Invalid email or password")}
+function logout(){sessionStorage.removeItem("ticketeaseAdminLoggedIn");dashboard.classList.add("hidden");loginPage.classList.remove("hidden");email.value="";password.value=""}
+function render(){let all=getBookings(),movie=all.filter(b=>b.type==="Movie"),food=all.filter(b=>b.type==="Food"),transport=all.filter(b=>b.type==="Transport");total.textContent=all.length;movieCount.textContent=movie.length;foodCount.textContent=food.length;transportCount.textContent=transport.length;revenue.textContent="₹"+all.reduce((s,b)=>s+Number(b.amount||0),0);
+let f=filter.value,items=f==="All"?all:all.filter(b=>b.type===f);rows.innerHTML="";empty.classList.toggle("hidden",items.length!==0);tableWrap.classList.toggle("hidden",items.length===0);
+items.slice().reverse().forEach(b=>{let tr=document.createElement("tr");["id","name","email","phone","type","item","details","quantity"].forEach(k=>cell(tr,b[k]));cell(tr,"₹"+b.amount);["payment","status","date"].forEach(k=>cell(tr,b[k]));rows.append(tr)})}
+function cell(row,value){let td=document.createElement("td");td.textContent=value??"";row.append(td)}
+function exportCSV(){let data=getBookings();if(!data.length)return alert("No bookings to export");let cols=["id","name","email","phone","type","item","details","quantity","amount","payment","status","date"];let quote=v=>'"'+String(v??"").replace(/"/g,'""')+'"';let csv=[cols.join(","),...data.map(b=>cols.map(k=>quote(b[k])).join(","))].join("\n");let url=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));let a=document.createElement("a");a.href=url;a.download="TicketEase_Bookings.csv";a.click();URL.revokeObjectURL(url)}
+if(sessionStorage.getItem("ticketeaseAdminLoggedIn")==="true"){loginPage.classList.add("hidden");dashboard.classList.remove("hidden");render()}
+</script></body></html>
