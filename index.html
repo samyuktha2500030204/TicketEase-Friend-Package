@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TicketEase | User Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#111318;color:#f5f5f5}header{background:#191c23;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;border-bottom:1px solid #343946}
+.logo{color:#e7b75b;font-size:26px}nav{display:flex;gap:15px;flex-wrap:wrap}button{cursor:pointer}
+nav button,.link{background:none;border:0;color:white;padding:8px}nav button:hover,.link:hover{color:#e7b75b}
+.primary{background:#e7b75b;color:#171717;border:0;padding:12px 17px;border-radius:6px;font-weight:bold}.primary:hover{background:#f3cc7d}
+.secondary{background:#292e39;color:white;border:1px solid #454b58;padding:12px;border-radius:6px}
+.hidden{display:none!important}.login-page{min-height:82vh;display:flex;justify-content:center;align-items:center;padding:25px}
+.panel{width:100%;max-width:440px;background:#1c2029;border:1px solid #343946;padding:30px;border-radius:14px;box-shadow:0 10px 30px #0005}
+.panel h1{text-align:center;margin-bottom:12px}.panel>p{text-align:center;color:#aaa;line-height:1.6;margin-bottom:20px}
+label{display:block;margin:14px 0 7px;color:#ddd}input,select{width:100%;padding:12px;background:#111318;color:white;border:1px solid #454b58;border-radius:6px}
+.phone{display:flex;gap:9px;align-items:center}.phone span{background:#111318;color:#e7b75b;padding:12px;border-radius:6px}.phone input{flex:1;min-width:0}
+.full{width:100%;margin-top:17px}.google{width:100%;margin-top:14px;padding:12px;background:#292e39;color:white;border:1px solid #454b58;border-radius:6px}
+.hero{text-align:center;padding:60px 15px 35px}.hero h1{font-size:36px;margin-bottom:12px}.gold,.section h2{color:#e7b75b}.hero p{color:#aaa}
+.section{padding:30px 6% 55px}.section h2{margin-bottom:22px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px}
+.card{background:#1c2029;border:1px solid #343946;border-radius:12px;overflow:hidden}.service-icon{height:155px;display:grid;place-items:center;font-size:68px}.movie{background:linear-gradient(135deg,#482b36,#171923)}.food{background:linear-gradient(135deg,#59402a,#171923)}.transport{background:linear-gradient(135deg,#24434a,#171923)}
+.content{padding:20px}.content h3{margin-bottom:10px}.content p{color:#aaa;line-height:1.55;min-height:65px;margin-bottom:15px}.content button{width:100%}
+.item{padding:20px}.item h3{margin-bottom:8px}.price{color:#e7b75b;margin:12px 0}.item button{width:100%;margin-top:8px}
+.formbox{max-width:600px;margin:20px auto;background:#1c2029;border:1px solid #343946;padding:25px;border-radius:12px}.formbox h3{color:#e7b75b;margin-bottom:12px}
+.formbox .primary{width:100%;margin-top:18px}.back{background:#343946;color:white;border:0;padding:10px 16px;border-radius:6px;margin-bottom:18px}
+.booking{background:#1c2029;border:1px solid #343946;border-radius:10px;padding:18px;margin:14px 0;line-height:1.8;overflow-wrap:anywhere}.booking h3{color:#e7b75b}
+.empty{background:#1c2029;color:#aaa;padding:20px;border-radius:8px}footer{text-align:center;padding:20px;background:#191c23;color:#888}
+@media(max-width:600px){.hero h1{font-size:28px}header{justify-content:center}.panel{padding:23px}}
+</style>
+</head>
+<body>
+<header><h2 class="logo">TicketEase</h2><nav id="nav" class="hidden">
+<button onclick="show('home')">Home</button><button onclick="myBookings()">My Bookings</button><button onclick="logout()">Logout</button></nav></header>
+<main>
+<section id="login" class="login-page"><div class="panel">
+<div style="text-align:center;font-size:50px">🎟️</div><h1>Welcome to <span class="gold">TicketEase</span></h1>
+<p>Login to book movies, food and transportation.</p>
+<form onsubmit="sendOtp(event)"><label>Mobile Number</label><div class="phone"><span>+91</span><input id="phone" type="tel" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number" required></div><button class="primary full">Get OTP</button></form>
+<p style="margin:18px 0 0">──────── OR ────────</p><button class="google" onclick="googleLogin()">🌐 Continue with Google</button>
+<button class="google" onclick="show('adminLogin')">Admin Login</button><p style="font-size:12px;margin:18px 0 0">Google sign-in requires OAuth setup. OTP is simulated for this demo.</p>
+</div></section>
+<section id="otp" class="login-page hidden"><div class="panel"><h1>Verify <span class="gold">OTP</span></h1><p>Enter the demo OTP shown in the alert.</p>
+<form onsubmit="verifyOtp(event)"><label>Six-digit OTP</label><input id="otpInput" maxlength="6" pattern="[0-9]{6}" required><button class="primary full">Verify & Continue</button></form><button class="google" onclick="show('login')">Change number</button></div></section>
+<section id="location" class="login-page hidden"><div class="panel"><div style="text-align:center;font-size:45px">📍</div><h1>Location Access</h1><p>Allow location access to help with transportation bookings.</p><button class="primary full" onclick="allowLocation()">Allow Location</button><button class="google" onclick="show('home')">Maybe Later</button></div></section>
+<section id="home" class="hidden"><div class="hero"><h1>Book Your <span class="gold">Experience</span></h1><p>Movies, delicious food and transportation. Everything in one place.</p></div><div class="section"><h2>Explore Our Services</h2><div class="grid">
+<div class="card"><div class="service-icon movie">🎬</div><div class="content"><h3>Movie Booking</h3><p>Explore movies, select show timings and book tickets.</p><button class="primary" onclick="show('movies')">Book Movies</button></div></div>
+<div class="card"><div class="service-icon food">🍽️</div><div class="content"><h3>Food Booking</h3><p>Choose meals, snacks and delicious food items.</p><button class="primary" onclick="show('food')">Order Food</button></div></div>
+<div class="card"><div class="service-icon transport">🚘</div><div class="content"><h3>Transportation</h3><p>Book a car, bus, train, auto, aeroplane or bike.</p><button class="primary" onclick="show('transport')">Book Transport</button></div></div>
+</div></div></section>
+<section id="movies" class="section hidden"><button class="back" onclick="show('home')">← Back</button><h2>🎬 Available Movies</h2><div id="movieList" class="grid"></div></section>
+<section id="food" class="section hidden"><button class="back" onclick="show('home')">← Back</button><h2>🍽️ Food Menu</h2><div id="foodList" class="grid"></div></section>
+<section id="transport" class="section hidden"><button class="back" onclick="show('home')">← Back</button><h2>🚘 Transportation</h2><div id="transportList" class="grid"></div></section>
+<section id="checkout" class="section hidden"><button class="back" onclick="show('home')">← Back</button><h2>Complete Your Booking</h2>
+<form id="bookingForm" class="formbox" onsubmit="confirmBooking(event)"><h3 id="itemName"></h3><p id="itemPrice" class="price"></p>
+<label>Full Name</label><input id="customerName" required><label>Email</label><input id="customerEmail" type="email" required><label>Phone</label><input id="customerPhone" type="tel" required>
+<div id="tripFields" class="hidden"><label>From</label><input id="fromPlace"><label>To</label><input id="toPlace"><label>Travel Date</label><input id="travelDate" type="date"></div>
+<div id="showFields" class="hidden"><label>Show Time</label><select id="showTime"><option>10:00 AM</option><option>1:00 PM</option><option>4:00 PM</option><option>7:00 PM</option></select></div>
+<label>Quantity</label><input id="quantity" type="number" min="1" value="1" required>
+<label>Payment Method</label><select id="payment" required><option value="">Select payment</option><option>UPI (Demo)</option><option>Credit/Debit Card (Demo)</option><option>Net Banking (Demo)</option><option>Cash</option></select>
+<div id="paymentExtra" class="hidden"><label id="paymentExtraLabel"></label><input id="paymentExtraInput" placeholder="Demo reference only"></div>
+<h3 id="total" class="price"></h3><button class="primary">Pay & Confirm Booking</button><p style="color:#999;font-size:12px;margin-top:12px">Demo payment only. Do not enter real card, bank or UPI credentials.</p></form></section>
+<section id="bookings" class="section hidden"><button class="back" onclick="show('home')">← Back</button><h2>📋 My Bookings</h2><div id="bookingList"></div></section>
+<section id="adminLogin" class="login-page hidden"><form class="panel" onsubmit="adminLogin(event)"><h1>Admin Login</h1><label>Email</label><input id="adminEmail" type="email" required><label>Password</label><input id="adminPassword" type="password" required><button class="primary full">Login</button><button type="button" class="google" onclick="show('login')">Back to User Login</button></form></section>
+</main><footer>© 2026 TicketEase | Online Ticket Booking System</footer>
+<script>
+const pageIds=["login","otp","location","home","movies","food","transport","checkout","bookings","adminLogin"];
+function show(id){pageIds.forEach(p=>document.getElementById(p).classList.toggle("hidden",p!==id));document.getElementById("nav").classList.toggle("hidden",!["home","movies","food","transport","checkout","bookings"].includes(id));if(id==="movies")render(movies,"movieList");if(id==="food")render(foodItems,"foodList");if(id==="transport")render(transportItems,"transportList")}
+let phone="",demoOtp="",chosen=null,category="";
+function sendOtp(e){e.preventDefault();phone=document.getElementById("phone").value;demoOtp=String(Math.floor(100000+Math.random()*900000));alert("Demo OTP: "+demoOtp);show("otp")}
+function verifyOtp(e){e.preventDefault();if(document.getElementById("otpInput").value===demoOtp&&demoOtp){alert("Login successful");show("location")}else alert("Incorrect OTP")}
+function googleLogin(){alert("Google login needs Firebase or Google OAuth configuration. This button is a demo placeholder.")}
+function allowLocation(){if(!navigator.geolocation){alert("Geolocation is unavailable.");show("home");return}navigator.geolocation.getCurrentPosition(()=>{alert("Location permission granted.");show("home")},()=>{alert("Location not granted. You can continue.");show("home")})}
+const movies=[["The Last Journey",180],["City Lights",160],["Mission Galaxy",220],["Laugh Out Loud",150],["Mystery House",190],["Kingdom of Dreams",200]].map(([name,price])=>({name,price}));
+const foodItems=[["Veg Meals",120],["Masala Dosa",80],["Chicken Biryani",180],["Fried Rice",130],["Idli Vada",65],["Samosa",55]].map(([name,price])=>({name,price}));
+const transportItems=[["Car",450],["Bus",250],["Train",180],["Auto",100],["Aeroplane",2500],["Bike",150]].map(([name,price])=>({name,price}));
+function render(items,id){let box=document.getElementById(id);box.innerHTML="";items.forEach(item=>{let card=document.createElement("div");card.className="card item";let h=document.createElement("h3");h.textContent=item.name;let p=document.createElement("p");p.className="price";p.textContent="Price: ₹"+item.price;let b=document.createElement("button");b.className="primary";b.textContent="Book Now";b.onclick=()=>openBooking(item,id==="movieList"?"Movie":id==="foodList"?"Food":"Transport");card.append(h,p,b);box.append(card)})}
+function openBooking(item,type){chosen=item;category=type;document.getElementById("itemName").textContent=item.name;document.getElementById("itemPrice").textContent="Price per item: ₹"+item.price;document.getElementById("customerPhone").value=phone;let trip=type==="Transport";document.getElementById("tripFields").classList.toggle("hidden",!trip);document.getElementById("showFields").classList.toggle("hidden",type!=="Movie");["fromPlace","toPlace","travelDate"].forEach(id=>document.getElementById(id).required=trip);document.getElementById("quantity").value=1;document.getElementById("payment").value="";document.getElementById("paymentExtra").classList.add("hidden");updateTotal();show("checkout")}
+function updateTotal(){if(chosen)document.getElementById("total").textContent="Total: ₹"+chosen.price*Math.max(1,Number(document.getElementById("quantity").value)||1)}
+document.getElementById("quantity").addEventListener("input",updateTotal);
+document.getElementById("payment").addEventListener("change",function(){let extra=document.getElementById("paymentExtra"),label=document.getElementById("paymentExtraLabel"),input=document.getElementById("paymentExtraInput");extra.classList.add("hidden");input.required=false;input.value="";if(["UPI (Demo)","Credit/Debit Card (Demo)","Net Banking (Demo)"].includes(this.value)){label.textContent=this.value+" reference (demo only)";extra.classList.remove("hidden");input.required=true}});
+function getBookings(){try{return JSON.parse(localStorage.getItem("ticketease_bookings"))||[]}catch{return []}}
+function confirmBooking(e){e.preventDefault();let qty=Number(document.getElementById("quantity").value);if(qty<1)return alert("Enter a valid quantity");let booking={id:"BK"+Date.now(),name:document.getElementById("customerName").value,email:document.getElementById("customerEmail").value,phone:document.getElementById("customerPhone").value,type:category,item:chosen.name,quantity:qty,amount:chosen.price*qty,details:category==="Transport"?document.getElementById("fromPlace").value+" to "+document.getElementById("toPlace").value+" | "+document.getElementById("travelDate").value:category==="Movie"?document.getElementById("showTime").value:"Food Order",payment:document.getElementById("payment").value,status:"Confirmed",date:new Date().toLocaleString()};let all=getBookings();all.push(booking);localStorage.setItem("ticketease_bookings",JSON.stringify(all));alert("Demo payment successful. Booking confirmed!");myBookings()}
+function myBookings(){let list=getBookings().filter(b=>b.phone===phone),box=document.getElementById("bookingList");box.innerHTML="";if(!list.length){box.innerHTML='<p class="empty">No bookings yet. Start exploring!</p>'}else list.reverse().forEach(b=>{let card=document.createElement("div");card.className="booking";let h=document.createElement("h3");h.textContent=b.type+" Booking";card.append(h);[["Booking ID",b.id],["Customer",b.name],["Email",b.email],["Phone",b.phone],["Item",b.item],["Quantity",b.quantity],["Details",b.details],["Payment",b.payment],["Amount","₹"+b.amount],["Status",b.status],["Date",b.date]].forEach(([k,v])=>{let p=document.createElement("p");p.textContent=k+": "+v;card.append(p)});box.append(card)});show("bookings")}
+function logout(){phone="";demoOtp="";document.getElementById("phone").value="";document.getElementById("otpInput").value="";show("login")}
+function adminLogin(e){e.preventDefault();if(document.getElementById("adminEmail").value==="admin@ticketease.com"&&document.getElementById("adminPassword").value==="Admin@123"){sessionStorage.setItem("ticketeaseAdminLoggedIn","true");location.href="Admin.html"}else alert("Invalid admin credentials")}
+show("login");
+</script>
+</body></html>
